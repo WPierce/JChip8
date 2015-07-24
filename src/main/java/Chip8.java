@@ -1,3 +1,6 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.io.FileInputStream;
@@ -12,6 +15,8 @@ public class Chip8
     private Memory memSys;
     private Display display;
     private KeyboardManager keyboard;
+
+    private Logger log = LogManager.getLogger(Chip8.class);
 
     int[] font = {0xF0, 0x90, 0x90, 0x90, 0xF0,// 0
         0x20, 0x60, 0x20, 0x20, 0x70,// 1
@@ -33,6 +38,7 @@ public class Chip8
 
     public boolean loadRom(String filename, int startLocation)
     {
+        log.info("Loading rom " + filename);
         try
         {
             FileInputStream rom = new FileInputStream(filename);
