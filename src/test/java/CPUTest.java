@@ -37,23 +37,39 @@ public class CPUTest
 
     }
 
+    //Getter/Setter tests.
+
     @Test (expected = IllegalArgumentException.class)
-    public void testGettingRegisterLessThanZeroThrowsException()
+    public void testGettingRegisterLessThanZero_ThrowsException()
     {
         mCPU.getRegister(-1);
     }
 
     @Test (expected = IllegalArgumentException.class)
-    public void testGettingRegisterNumberHigherThanMaxRegsThrowsException()
+    public void testGettingRegisterNumberHigherThanMaxRegs_ThrowsException()
     {
         mCPU.getRegister(20);
     }
 
-    @Test
+    @Test (expected = IllegalArgumentException.class)
     public void settingRegisterWithValueOverByte_ThrowsException()
     {
-
+        mCPU.setRegister(0, 256);
     }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void settingRegisterNumberHigherThanMaxRegs_ThrowsException()
+    {
+        mCPU.setRegister(20, 0);
+    }
+
+    @Test (expected = IllegalArgumentException.class)
+    public void testSettingRegisterLessThanZero_ThrowsException()
+    {
+        mCPU.setRegister(-1, 1);
+    }
+
+    //Opcode tests
 
     @Test
     public void testAdd_opcode8xy4()
@@ -61,7 +77,7 @@ public class CPUTest
         int opcode = 0x8024;
         mCPU.setRegister(2, 2);
         mCPU.execute(opcode);
-        assertEquals(2, mCPU.getRegisters()[0]);
+        assertEquals(2, mCPU.getRegister(0));
     }
 
     @Test
@@ -71,7 +87,7 @@ public class CPUTest
         mCPU.setRegister(0, 1);
         mCPU.setRegister(2, 255);
         mCPU.execute(opcode);
-        assertEquals(0, mCPU.getRegisters()[0]);
-        assertEquals(1, mCPU.getRegisters()[0xF]);
+        assertEquals(0, mCPU.getRegister(0));
+        assertEquals(1, mCPU.getRegister(0xF));
     }
 }

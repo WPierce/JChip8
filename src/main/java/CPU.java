@@ -113,7 +113,7 @@ public class CPU
             throw new IllegalArgumentException("Register number must be positive");
         }
 
-        return getRegister(regNum);
+        return V[regNum];
     }
 
     public void execute(int opcode)
@@ -665,6 +665,14 @@ public class CPU
 
     public void setRegister(int regNum, int value)
     {
+        if (regNum < 0 || regNum > V.length)
+        {
+            throw new IllegalArgumentException("Register " + regNum + " does not exist");
+        }
+        if (value > 0xFF)
+        {
+            throw new IllegalArgumentException("Value must be less than or equal to " + 0xFF);
+        }
         V[regNum] = value;
     }
 }//CPU
