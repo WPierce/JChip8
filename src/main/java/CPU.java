@@ -1,10 +1,17 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Arrays;
 import java.util.Random;
 
 public class CPU
 {
 
+    private final Logger log = LogManager.getLogger(Chip8.class);
+
     private final Random rnd = new Random();
+
+    private final int DEFAULT_ENTRY_POINT = 0x200;
 
     private int MAX_STACK_DEPTH = 16;
 
@@ -38,11 +45,21 @@ public class CPU
         DT = 0;
         ST = 0;
 
+        initStack();
+    }//CPU
+
+    private void initStack()
+    {
         for (int i = 0; i < MAX_STACK_DEPTH; i++)
         {
             stack[i] = 0;
         }
-    }//CPU
+    }
+
+    public CPU()
+    {
+        initStack();
+    }
 
     public void updateDT()
     {
@@ -50,6 +67,7 @@ public class CPU
         {
             DT = DT - 1;
         }
+        if (log.isDebugEnabled()) log.debug("DT was " + (DT + 1) + " is now " + DT);
         //System.out.println("DT was " + (DT + 1) + " is now " + DT);
     }//updateDT
 
@@ -82,6 +100,20 @@ public class CPU
     public int[] getRegisters()
     {
         return V;
+    }
+
+    public int getRegister(int regNum)
+    {
+        if (regNum > V.length)
+        {
+            throw new IllegalArgumentException("No register with number " + regNum);
+        }
+        if (regNum < 0)
+        {
+            throw new IllegalArgumentException("Register number must be positive");
+        }
+
+        return getRegister(regNum);
     }
 
     public void execute(int opcode)
@@ -226,7 +258,7 @@ public class CPU
                 x = (opcode & 0x0F00) >> 8;
                 y = (opcode & 0x00F0) >> 4;
 
-                System.out.println("MOV V" + Integer.toHexString(x) + " V" + Integer.toHexString(y));
+                if (log.isDebugEnabled()) log.debug("MOV V" + Integer.toHexString(x) + " V" + Integer.toHexString(y));
 
                 V[x] = V[y];
                 PC += 2;
@@ -272,8 +304,9 @@ public class CPU
 
                 System.out.println("ADD V" + Integer.toHexString(x) + " V" + Integer.toHexString(y));
 
-                sum = (V[x] + V[y]) & 0xFF; //mask off top bits for unsigned
-                V[x] = sum;
+                sum = (V[x] + V[y]);
+
+                int overflowRegValue = willOverflow(V[x], V[y]) ? 1 : 0;
 
                 if (sum > 0xFF)
                 {
@@ -283,6 +316,8 @@ public class CPU
                 {
                     V[0xF] = 0;
                 }
+
+                V[x] = sum & 0xFF; //mask off top bits for unsigned
                 PC += 2;
 
                 break;
@@ -616,6 +651,11 @@ public class CPU
         }//outside switch
     }//execute opcode
 
+    private boolean willOverflow(int x, int y)
+    {
+        return x + y > 0xFF;
+    }
+
     @Override
     public String toString()
     {
@@ -623,5 +663,8 @@ public class CPU
             + ", ST=" + ST + ", V=" + Arrays.toString(V) + "]";
     }
 
-
+    public void setRegister(int regNum, int value)
+    {
+        V[regNum] = value;
+    }
 }//CPU

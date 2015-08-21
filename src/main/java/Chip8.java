@@ -16,7 +16,19 @@ public class Chip8
     private Display display;
     private KeyboardManager keyboard;
 
-    private Logger log = LogManager.getLogger(Chip8.class);
+    private final Logger log = LogManager.getLogger(Chip8.class);
+
+    static
+    {
+        try
+        {
+            Log4JConfigurator.configureFrom("src/main/resources/Log4jConfig.xml");
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     int[] font = {0xF0, 0x90, 0x90, 0x90, 0xF0,// 0
         0x20, 0x60, 0x20, 0x20, 0x70,// 1
@@ -112,7 +124,8 @@ public class Chip8
 
         chip8.loadFonts();
 
-        String filename = "/home/wpierce/ideaProjects/JChip8/src/main/resources/chip8pack/Chip-8 Games/Blinky [Hans Christian Egeberg, 1991].ch8";
+        String filename = "/home/wpierce/Downloads/Chipper/out.c8";
+//        String filename = "/home/wpierce/ideaProjects/JChip8/src/main/resources/chip8pack/Chip-8 Games/Blinky [Hans Christian Egeberg, 1991].ch8";
         int startLocation = 0x0200;
         chip8.loadRom(filename, startLocation);
 
