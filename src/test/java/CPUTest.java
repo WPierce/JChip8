@@ -72,6 +72,35 @@ public class CPUTest
     //Opcode tests
 
     @Test
+    public void testJMP_0x1nnn()
+    {
+        int opcode = 0x1123;
+        mCPU.execute(opcode);
+        assertEquals(0x123, mCPU.getPC());
+    }
+
+    @Test
+    public void testCALL_0x2nnn()
+    {
+        int opcode = 0x2100;
+        int PCBeforeExec = mCPU.getPC();
+        mCPU.execute(opcode);
+        assertEquals(PCBeforeExec, mCPU.stackPeek());
+    }
+
+    @Test
+    public void testRET_0x2nnn()
+    {
+        int opcode = 0x2100;
+        int PCBeforeExec = mCPU.getPC();
+        mCPU.execute(opcode);
+
+        opcode = 0x00EE;
+        mCPU.execute(opcode);
+        assertEquals(PCBeforeExec, mCPU.getPC());
+    }
+
+    @Test
     public void testAdd_opcode8xy4()
     {
         int opcode = 0x8024;

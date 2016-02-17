@@ -1,8 +1,7 @@
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Arrays;
-import java.util.Random;
+import java.util.*;
 
 public class CPU
 {
@@ -29,7 +28,13 @@ public class CPU
     //the screen
     Display display;
 
+    public int[] getStack()
+    {
+        return Arrays.copyOf(stack, stack.length);
+    }
+
     private int[] stack = new int[MAX_STACK_DEPTH]; //this is the recursion stack
+    private Stack<Integer> stackk = new Stack<Integer>();
 
     private int[] V = new int[16]; //registers vx 0 through 15
 
@@ -142,9 +147,10 @@ public class CPU
                 //PC = address at top of stack
                 System.out.println("RET");
                 //Stack pointer = stack pointer - 1
-                SP--;
-                PC = stack[SP];
-                stack[SP] = 0x0; //added in from JChip
+                PC = stackk.pop();
+//                SP--;
+//                PC = stack[SP];
+//                stack[SP] = 0x0; //added in from JChip
                 PC += 2;
                 break;
 
@@ -164,8 +170,9 @@ public class CPU
             addr = opcode & 0x0FFF;
             System.out.println("CALL subroutine at " + addr);
             //put current PC on top of stack
-            stack[SP] = PC;
-            SP++;
+            stackk.push(PC);
+//            stack[SP] = PC;
+//            SP++;
             PC = addr;
 
             break;
@@ -674,5 +681,10 @@ public class CPU
             throw new IllegalArgumentException("Value must be less than or equal to " + 0xFF);
         }
         V[regNum] = value;
+    }
+
+    public int stackPeek()
+    {
+        return stackk.peek();
     }
 }//CPU
