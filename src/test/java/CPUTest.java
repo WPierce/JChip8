@@ -89,12 +89,14 @@ public class CPUTest
     }
 
     @Test
-    public void testRET_0x2nnn()
+    public void testRET_0x00EE()
     {
+        //Jump
         int opcode = 0x2100;
         int PCBeforeExec = mCPU.getPC();
         mCPU.execute(opcode);
 
+        //Return
         opcode = 0x00EE;
         mCPU.execute(opcode);
         assertEquals(PCBeforeExec, mCPU.getPC());
@@ -119,4 +121,137 @@ public class CPUTest
         assertEquals(0, mCPU.getRegister(0));
         assertEquals(1, mCPU.getRegister(0xF));
     }
+
+    @Test
+     public void testSE_opcode3xkk_whenValuesAreEqual()
+{
+    //Should skip one instruction
+    mCPU.setRegister(0, 0x20);
+
+    int opcode = 0x3020;
+    mCPU.execute(opcode);
+    assertEquals(4, mCPU.getPC());
+}
+
+    @Test
+    public void testSE_opcode3xkk_whenValuesAreNotEqual()
+    {
+        //Should skip one instruction
+        mCPU.setRegister(0, 0x20);
+
+        int opcode = 0x3021;
+        mCPU.execute(opcode);
+        assertEquals(2, mCPU.getPC());
+    }
+
+    @Test
+    public void testSNE_opcode4xkk_whenValuesAreEqual()
+    {
+        //Should skip one instruction
+        mCPU.setRegister(0, 0x20);
+
+        int opcode = 0x4020;
+        mCPU.execute(opcode);
+        assertEquals(2, mCPU.getPC());
+    }
+
+    @Test
+    public void testSNE_opcode4xkk_whenValuesAreNotEqual()
+    {
+        //Should skip one instruction
+        mCPU.setRegister(0, 0x20);
+
+        int opcode = 0x4021;
+        mCPU.execute(opcode);
+        assertEquals(4, mCPU.getPC());
+    }
+
+    @Test
+    public void testSE_Regs_opcode5xy0_whenValuesAreEqual()
+    {
+        //Should skip one instruction
+        mCPU.setRegister(0, 0x20);
+        mCPU.setRegister(1, 0x20);
+
+        int opcode = 0x5010;
+        mCPU.execute(opcode);
+        assertEquals(4, mCPU.getPC());
+    }
+
+    @Test
+    public void testSE_Regs_opcode5xy0_whenValuesAreNotEqual()
+    {
+        //Should skip one instruction
+        mCPU.setRegister(0, 0x20);
+        mCPU.setRegister(1, 0x21);
+
+        int opcode = 0x5010;
+        mCPU.execute(opcode);
+        assertEquals(2, mCPU.getPC());
+    }
+
+    @Test
+    public void test_LD_VX_opcode6xkk()
+    {
+        int opcode = 0x6009;
+        mCPU.execute(opcode);
+        assertEquals(0x09, mCPU.getRegister(0));
+    }
+
+    @Test
+    public void test_ADD_VX_byte_opcode7xkk_initiallyEmptyReg()
+    {
+        int opcode = 0x7009;
+        mCPU.execute(opcode);
+        assertEquals(0x09, mCPU.getRegister(0));
+    }
+
+    @Test
+    public void test_ADD_VX_byte_opcode7xkk_initiallyNonEmptyReg()
+    {
+        mCPU.setRegister(0, 0x02);
+        int opcode = 0x7007;
+        mCPU.execute(opcode);
+        assertEquals(0x09, mCPU.getRegister(0));
+    }
+
+    @Test
+    public void test_ADD_VX_byte_opcode7xkk_WithOverflow()
+    {
+        mCPU.setRegister(0, 0xFE);
+        int opcode = 0x7003;
+        mCPU.execute(opcode);
+        assertEquals(0x01, mCPU.getRegister(0));
+    }
+
+    @Test
+    public void test_LD_VX_VY_opcode8xy0()
+    {
+        mCPU.setRegister(0, 0x02);
+        mCPU.setRegister(1, 0x03);
+        int opcode = 0x8010;
+        mCPU.execute(opcode);
+        assertEquals(0x03, mCPU.getRegister(0));
+    }
+
+    @Test
+    public void test_OR_VX_VY_opcode8xy1()
+    {
+        mCPU.setRegister(0, 0x13);
+        mCPU.setRegister(1, 0x04);
+        int opcode = 0x8011;
+        mCPU.execute(opcode);
+        assertEquals(0x17, mCPU.getRegister(0));
+    }
+
+    @Test
+    public void test_AND_VX_VY_opcode8xy2()
+    {
+        mCPU.setRegister(0, 0x15);
+        mCPU.setRegister(1, 0x16);
+        int opcode = 0x8012;
+        mCPU.execute(opcode);
+        assertEquals(0x14, mCPU.getRegister(0));
+    }
+
 }

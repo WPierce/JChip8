@@ -124,7 +124,7 @@ public class Chip8
 
         chip8.loadFonts();
 
-        String filename = "/home/wpierce/Downloads/Chipper/out.c8";
+        String filename = "src/main/resources/chip8pack/SuperChip Test Programs/SC Test.ch8";
 //        String filename = "/home/wpierce/ideaProjects/JChip8/src/main/resources/chip8pack/Chip-8 Games/Blinky [Hans Christian Egeberg, 1991].ch8";
         int startLocation = 0x0200;
         chip8.loadRom(filename, startLocation);

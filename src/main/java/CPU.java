@@ -12,29 +12,25 @@ public class CPU
 
     private final int DEFAULT_ENTRY_POINT = 0x200;
 
-    private int MAX_STACK_DEPTH = 16;
-
     private int I; //address pointer
-    private int SP; //stack pointer
     private int PC; //program counter
 
-    int DT; //delay timer
-    int ST; //sound timer
+    private int DT; //delay timer
+    private int ST; //sound timer
 
     //the memory system
-    Memory memSystem;
-    KeyboardManager keyboard;
+    private Memory memSystem;
+    private KeyboardManager keyboard;
 
     //the screen
-    Display display;
+    private Display display;
 
-    public int[] getStack()
+    public ArrayList<Integer> getStack()
     {
-        return Arrays.copyOf(stack, stack.length);
+        return  new ArrayList<>(stack);
     }
 
-    private int[] stack = new int[MAX_STACK_DEPTH]; //this is the recursion stack
-    private Stack<Integer> stackk = new Stack<Integer>();
+    private Stack<Integer> stack = new Stack<>();
 
     private int[] V = new int[16]; //registers vx 0 through 15
 
@@ -45,25 +41,14 @@ public class CPU
         this.keyboard = keyboard;
 
         I = 0;
-        SP = 0x00000000;
         PC = entryPoint;
         DT = 0;
         ST = 0;
 
-        initStack();
     }//CPU
-
-    private void initStack()
-    {
-        for (int i = 0; i < MAX_STACK_DEPTH; i++)
-        {
-            stack[i] = 0;
-        }
-    }
 
     public CPU()
     {
-        initStack();
     }
 
     public void updateDT()
@@ -95,11 +80,6 @@ public class CPU
     public int getI()
     {
         return I;
-    }
-
-    public int getSP()
-    {
-        return SP;
     }
 
     public int[] getRegisters()
@@ -147,11 +127,9 @@ public class CPU
                 //PC = address at top of stack
                 System.out.println("RET");
                 //Stack pointer = stack pointer - 1
-                PC = stackk.pop();
-//                SP--;
-//                PC = stack[SP];
-//                stack[SP] = 0x0; //added in from JChip
-                PC += 2;
+                PC = stack.pop();
+                //TODO: Clarify if we're supposed to do PC+=2;
+//                PC += 2;
                 break;
 
             default:
@@ -170,9 +148,7 @@ public class CPU
             addr = opcode & 0x0FFF;
             System.out.println("CALL subroutine at " + addr);
             //put current PC on top of stack
-            stackk.push(PC);
-//            stack[SP] = PC;
-//            SP++;
+            stack.push(PC);
             PC = addr;
 
             break;
@@ -666,7 +642,7 @@ public class CPU
     @Override
     public String toString()
     {
-        return "CPU [I=" + I + ", SP=" + SP + ", PC=" + PC + ", DT=" + DT
+        return "CPU [I=" + I + ", SP=" + stack.size() + ", PC=" + PC + ", DT=" + DT
             + ", ST=" + ST + ", V=" + Arrays.toString(V) + "]";
     }
 
@@ -685,6 +661,6 @@ public class CPU
 
     public int stackPeek()
     {
-        return stackk.peek();
+        return stack.peek();
     }
 }//CPU
